@@ -76,7 +76,11 @@
         // For respawn (hourly/after kill): provide interval in milliseconds (e.g., 30 min = 30 * 60 * 1000)
         // Add more types as needed by extending the getNextSpawn function
         const bosses = [
-            // W1
+        // Cryptic Sanctuary
+            { name: "Brawler Chubbee", location: "Cryptic Sanctuary", map: "Cryptic Sanctuary", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
+            { name: "Madened Irua", location: "Cryptic Sanctuary", map: "Cryptic Sanctuary", type: "daily", times: ["03:00", "01:00", "04:00", "07:00", "10:00", "13:00", "16:00", "19:00", "22:00"] },
+            { name: "Demon Emperor Reaper", location: "Cryptic Sanctuary", map: "Cryptic Sanctuary", type: "daily", times: ["02:00", "05:00", "08:00", "11:00", "14:00", "17:00", "20:00", "23:00"] },
+        // W1
             { name: "Mata", location: "Bullface Forest", map: "World 1", type: "daily", times: ["02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "24:00"] },
             { name: "Boltox", location: "Demon Bull Temple 1F", map: "World 1", type: "daily", times: ["01:00", "03:00", "05:00", "07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] },
             { name: "Bullface Fiend King", location: "Bullface Fiend King's Sanctuary", map: "World 1", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
@@ -104,12 +108,12 @@
             { name: "Bicheon Sura", location: "Bicheon Town", map: "World 6", type: "daily", times: ["04:30", "10:30", "16:30", "22:30"] },
             { name: "Wuihan", location: "Phantom Woods", map: "World 6", type: "daily", times: ["05:30", "11:30", "17:30", "23:30"] },
             { name: "Obscene Yeticlops", location: "Bicheon Labyrinth", map: "World 6", type: "daily", times: ["06:30", "12:30", "18:30", "24:30"] },
-
-            // SPECIAL BOSS
-            { name: "Demon Spider of Hell Krukan", location: "Shackling Abaddon", map: "Shackling Abaddon", type: "weekly", day: 1, time: "23:00" }, // Monday
-            { name: "Black Flame Arch Demon Nerkan", location: "Black Flame Abaddon", map: "Black Flame Abaddon", type: "weekly", day: 2, time: "23:00" }, // Tuesday
-            { name: "Violet Demon God Turkan", location: "Violet Abaddon", map: "Violet Abaddon", type: "weekly", day: 4, time: "23:00" }, // Thursday
-            { name: "Crimson Emperor Utukan", location: "Crimson Abaddon", map: "Crimson Abaddon", type: "weekly", day: 5, time: "23:00" }, // Friday
+        // SPECIAL BOSS
+            { name: "Demon Spider of Hell Krukan", location: "Shackling Abaddon", map: "Special Boss", type: "weekly", day: 1, time: "23:00" }, // Monday
+            { name: "Black Flame Arch Demon Nerkan", location: "Black Flame Abaddon", map: "Special Boss", type: "weekly", day: 2, time: "23:00" }, // Tuesday
+            { name: "Hellish Lord Helbar", location: "Redmoon Purgatory 7F", map: "Redmoon Purgatory", type: "weekly", day: 3, time: "23:00" }, // Monday
+            { name: "Violet Demon God Turkan", location: "Violet Abaddon", map: "Special Boss", type: "weekly", day: 4, time: "23:00" }, // Thursday
+            { name: "Crimson Emperor Utukan", location: "Crimson Abaddon", map: "Special Boss", type: "weekly", day: 5, time: "23:00" }, // Friday
             
             // name: "Leader's Chamber I", map: "Magic Square", type: "respawn", interval: 30 * 60 * 1000 }, // 30 min
             // name: "Leader's Chamber II", map: "Magic Square", type: "respawn", interval: 45 * 60 * 1000 }, // 45 min

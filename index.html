@@ -38,10 +38,6 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .visitor-counter {
-            font-weight: bold;
-            color: #ff9800;
-        }
         .header-title {
             font-size: 1.4em;
             font-weight: bold;
@@ -121,7 +117,7 @@
             background: var(--card);
             padding: 20px;
             border-radius: 12px;
-            max-width: 720px;
+            max-width: 920px;
             width: 90%;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -192,10 +188,6 @@
         <!-- HEADER -->
         <header>
             <div class="header-title">MIR4 Boss Spawn Tracker</div>
-            <div class="visitor-counter">
-                Unique Visitors: <span id="visitor-count">Loading...</span>
-            </div>
-     
         </header>
 
         <!-- <h1>MIR4 Boss Spawn Tracker</h1> -->
@@ -203,9 +195,10 @@
         <table id="boss-table">
             <thead>
                 <tr>
+                    <th>Area</th>
                     <th>Boss Name</th>
-                    <th>Location/Map</th>
-                    <th>Next Spawn</th>
+                    <th>Location</th>
+                    <th>Spawn Time</th>
                     <th>Countdown</th>
                 </tr>
             </thead>
@@ -224,11 +217,8 @@
                     <p>Support the project:</p>
                     <p>
                         <a href="https://ko-fi.com/goonsnetwork" target="_blank" class="donate-link">Ko-fi</a> • 
-                        <a href="#" target="_blank" class="donate-link">PayPal</a> • 
-                        <a href="#" target="_blank" class="donate-link">Payoneer</a>
                     </p>
-                    <p><small class="donate-link">USDT: </small><p>
-                    <small class="donate-link">WEMIX: 0x2468e00f3e684cedf263ee4c9aa89de82001ecb1</small>
+                    <p>WEMIX PLAY:<small class="donate-link"> 0x096605352effe89ac90da09a735718096b86bf6c</small>
                     <div class="social-links">
                     </div>
                 </div>
@@ -249,7 +239,9 @@
             <table class="modal-table">
                 <thead>
                     <tr>
-                        <th>Boss</th>
+                        <th>Map</th>
+                        <th>Area</th>
+                        <th>Boss Name</th>
                         <th>Location</th>
                         <th>Time Left</th>
                     </tr>
@@ -268,68 +260,70 @@
 
     <script>
 
-        // === VISITOR COUNTER USING countapi.xyz (free, no backend needed) ===
-        fetch('https://api.countapi.xyz/hit/mir4bosstracker.go-ons.com/visits')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('visitor-count').textContent = data.value.toLocaleString();
-            })
-            .catch(() => {
-                document.getElementById('visitor-count').textContent = '—';
-            });
-
         // Boss data array - easy to add more bosses here
         // For daily: provide array of times in "HH:MM" format
         // For weekly: provide day (0=Sunday, 1=Monday, ..., 6=Saturday) and time "HH:MM"
         // For respawn (hourly/after kill): provide interval in milliseconds (e.g., 30 min = 30 * 60 * 1000)
         // Add more types as needed by extending the getNextSpawn function
         const bosses = [
+        // Continent - Field
+            { area: "Snake Pit", name: "Sanctuary of Hydra Boss", location: "Sanctuary of Hydra", map: "Continent - Field", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
+            { area: "Spiritual Center", name: "Redmoon Purgatory Boss", location: "Redmoon Purgatory", map: "Continent - Field", type: "daily", times: ["06:00", "12:00", "18:00", "24:00"] },
         // Cryptic Sanctuary
-            { name: "Brawler Chubbee", location: "Cryptic Sanctuary", map: "Cryptic Sanctuary", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
-            { name: "Madened Irua", location: "Cryptic Sanctuary", map: "Cryptic Sanctuary", type: "daily", times: ["01:00", "04:00", "07:00", "10:00", "13:00", "16:00", "19:00", "22:00"] },
-            { name: "Demon Emperor Reaper", location: "Cryptic Sanctuary", map: "Cryptic Sanctuary", type: "daily", times: ["02:00", "05:00", "08:00", "11:00", "14:00", "17:00", "20:00", "23:00"] },
+            { area: "Spiritual Center", name: "Brawler Chubbee", location: "Cryptic Sanctuary", map: "Continent - Field", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
+            { area: "Spiritual Center", name: "Madened Irua", location: "Cryptic Sanctuary", map: "Continent - Field", type: "daily", times: ["03:00", "01:00", "04:00", "07:00", "10:00", "13:00", "16:00", "19:00", "22:00"] },
+            { area: "Spiritual Center", name: "Demon Emperor Reaper", location: "Cryptic Sanctuary", map: "Continent - Field", type: "daily", times: ["02:00", "05:00", "08:00", "11:00", "14:00", "17:00", "20:00", "23:00"] },
+    // LAYER 3
         // W1
-            { name: "Mata", location: "Bullface Forest", map: "World 1", type: "daily", times: ["02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "24:00"] },
-            { name: "Boltox", location: "Demon Bull Temple 1F", map: "World 1", type: "daily", times: ["01:00", "03:00", "05:00", "07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] },
-            { name: "Bullface Fiend King", location: "Bullface Fiend King's Sanctuary", map: "World 1", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
+            { area: "World 1", name: "Mata", location: "Bullface Forest", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "24:00"] },
+            { area: "World 1", name: "Boltox", location: "Demon Bull Temple 1F", map: "Mirage Ship - Layer 3", type: "daily", times: ["01:00", "03:00", "05:00", "07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] },
+            { area: "World 1", name: "Bullface Fiend King", location: "Bullface Fiend King's Sanctuary", map: "Mirage Ship - Layer 3", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
         // W8
-            { name: "Yeo Wihuang", location: "Whitemaur Sealing Circle", map: "World 8", type: "daily", times: ["01:00", "05:00", "09:00", "13:00", "17:00", "21:00"] },
+            { area: "World 8", name: "Yeo Wihuang", location: "Whitemaur Sealing Circle", map: "Mirage Ship - Layer 3", type: "daily", times: ["01:00", "05:00", "09:00", "13:00", "17:00", "21:00"] },
         // W7
-            { name: "Taehyul", location: "Taehyul's Garden", map: "World 7", type: "daily", times: ["01:00", "03:00", "05:00", "07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] },
-            { name: "Yiun", location: "Demonic Cult Main Hall", map: "World 7", type: "daily", times: ["02:00", "05:00", "08:00", "11:00", "14:00", "17:00", "20:00", "23:00"] },
+            { area: "World 7", name: "Taehyul", location: "Taehyul's Garden", map: "Mirage Ship - Layer 3", type: "daily", times: ["01:00", "03:00", "05:00", "07:00", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"] },
+            { area: "World 7", name: "Yiun", location: "Demonic Cult Main Hall", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:00", "05:00", "08:00", "11:00", "14:00", "17:00", "20:00", "23:00"] },
         // W4
-            { name: "Nefariox Obdurate Zenith", location: "Phantasia Desert", map: "World 4", type: "daily", times: ["02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "24:00"] },
-            { name: "Kurilaica", location: "Overlord Sealing Circle", map: "World 4", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
+            { area: "World 4", name: "Nefariox Obdurate Zenith", location: "Phantasia Desert", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "24:00"] },
+            { area: "World 4", name: "Kurilaica", location: "Overlord Sealing Circle", map: "Mirage Ship - Layer 3", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "24:00"] },
         // W2
-            { name: "Juhui", location: "Redmoon Mountain", map: "World 2", type: "daily", times: ["02:30", "05:30", "08:30", "11:30", "14:30", "17:30", "20:30", "23:30"] },
+            { area: "World 2", name: "Juhui", location: "Redmoon Mountain", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:30", "05:30", "08:30", "11:30", "14:30", "17:30", "20:30", "23:30"] },
         // W5
-            { name: "Faluk", location: "Great Sabuk Wall Camp", map: "World 5", type: "daily", times: ["03:30", "06:30", "09:30", "12:30", "15:30", "18:30", "21:30", "24:30"] },
-            { name: "Tale Warper Fiend", location: "Illusion Temple", map: "World 5", type: "daily", times: ["01:30", "04:30", "07:30", "10:30", "13:30", "16:30", "19:30", "22:30"] },
+            { area: "World 5", name: "Faluk", location: "Great Sabuk Wall Camp", map: "Mirage Ship - Layer 3", type: "daily", times: ["03:30", "06:30", "09:30", "12:30", "15:30", "18:30", "21:30", "24:30"] },
+            { area: "World 5", name: "Tale Warper Fiend", location: "Illusion Temple", map: "Mirage Ship - Layer 3", type: "daily", times: ["01:30", "04:30", "07:30", "10:30", "13:30", "16:30", "19:30", "22:30"] },
         // W3
-            { name: "Dusk Armado Emperor", location: "Viperbeast Plain", map: "World 3", type: "daily", times: ["01:30", "03:30", "05:30", "07:30", "09:30", "11:30", "13:30", "15:30", "17:30", "19:30", "21:30", "23:30"] },
-            { name: "Mara", location: "Rockut Tomb", map: "World 3", type: "daily", times: ["02:30", "05:30", "08:30", "11:30", "14:30", "17:30", "20:30", "23:30"] },
-            { name: "Tombbeast Gyo", location: "Nefariox Necropolis", map: "World 3", type: "daily", times: ["02:30", "08:30", "14:30", "20:30"] },
-            { name: "Boodo", location: "Rockut Tomb", map: "World 3", type: "daily", times: ["03:30", "09:30", "15:30", "21:30"] },
+            { area: "World 3", name: "Dusk Armado Emperor", location: "Viperbeast Plain", map: "Mirage Ship - Layer 3", type: "daily", times: ["01:30", "03:30", "05:30", "07:30", "09:30", "11:30", "13:30", "15:30", "17:30", "19:30", "21:30", "23:30"] },
+            { area: "World 3", name: "Mara", location: "Rockut Tomb", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:30", "05:30", "08:30", "11:30", "14:30", "17:30", "20:30", "23:30"] },
+            { area: "World 3", name: "Tombbeast Gyo", location: "Nefariox Necropolis", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:30", "08:30", "14:30", "20:30"] },
+            { area: "World 3", name: "Boodo", location: "Rockut Tomb", map: "Mirage Ship - Layer 3", type: "daily", times: ["03:30", "09:30", "15:30", "21:30"] },
         // W6
-            { name: "Cheol Mokgang", location: "Bicheon Town", map: "World 6", type: "daily", times: ["02:30", "04:30", "06:30", "08:30", "10:30", "12:30", "14:30", "16:30", "18:30", "20:30", "22:30", "24:30"] },
-            { name: "Hong Yeo", location: "Demoniac Mine", map: "World 6", type: "daily", times: ["01:30", "03:30", "05:30", "07:30", "09:30", "11:30", "13:30", "15:30", "17:30", "19:30", "21:30", "23:30"] },
-            { name: "Bicheon Sura", location: "Bicheon Town", map: "World 6", type: "daily", times: ["04:30", "10:30", "16:30", "22:30"] },
-            { name: "Wuihan", location: "Phantom Woods", map: "World 6", type: "daily", times: ["05:30", "11:30", "17:30", "23:30"] },
-            { name: "Obscene Yeticlops", location: "Bicheon Labyrinth", map: "World 6", type: "daily", times: ["06:30", "12:30", "18:30", "24:30"] },
+            { area: "World 6", name: "Cheol Mokgang", location: "Bicheon Town", map: "Mirage Ship - Layer 3", type: "daily", times: ["02:30", "04:30", "06:30", "08:30", "10:30", "12:30", "14:30", "16:30", "18:30", "20:30", "22:30", "24:30"] },
+            { area: "World 6", name: "Hong Yeo", location: "Demoniac Mine", map: "Mirage Ship - Layer 3", type: "daily", times: ["01:30", "03:30", "05:30", "07:30", "09:30", "11:30", "13:30", "15:30", "17:30", "19:30", "21:30", "23:30"] },
+            { area: "World 6", name: "Bicheon Sura", location: "Bicheon Town", map: "Mirage Ship - Layer 3", type: "daily", times: ["04:30", "10:30", "16:30", "22:30"] },
+            { area: "World 6", name: "Wuihan", location: "Phantom Woods", map: "Mirage Ship - Layer 3", type: "daily", times: ["05:30", "11:30", "17:30", "23:30"] },
+            { area: "World 6", name: "Obscene Yeticlops", location: "Bicheon Labyrinth", map: "Mirage Ship - Layer 3", type: "daily", times: ["06:30", "12:30", "18:30", "24:30"] },
+    // LAYER 1
+        // W1
+            { area: "World 1", name: "Jihwa", location: "Unseo Town", map: "Mirage Ship - Layer 1", type: "daily", times: ["02:30", "5:30", "8:30", "11:30", "14:30", "17:30", "20:30", "23:30"] },
+            { area: "World 1", name: "Nighteyes Yaksha", location: "Seven Valleys Mountain", map: "Mirage Ship - Layer 1", type: "daily", times: ["03:30", "9:30", "15:30", "21:30"] },
+            { area: "World 1", name: "Black Carapace Dusk Armado", location: "Seven Valleys Mountain", map: "Mirage Ship - Layer 1", type: "daily", times: ["03:30", "6:30", "9:30", "12:30", "15:30", "18:30", "21:30", "24:30"] },
+            { area: "World 1", name: "Bulhu", location: "Roairing Flame Island", map: "Mirage Ship - Layer 1", type: "daily", times: ["04:30", "10:30", "16:30", "22:30"] },
+        // W2
+            { area: "World 2", name: "Guemugwang", location: "Nine Dragon Ice Field", map: "Mirage Ship - Layer 1", type: "daily", times: ["05:30", "11:30", "17:30", "23:30"] },
+            { area: "World 2", name: "Do Maeongryong", location: "Underground Jail", map: "Mirage Ship - Layer 1", type: "daily", times: ["06:30", "12:30", "18:30", "24:30"] },
+            { area: "World 2", name: "Molgrash", location: "Underground Jail", map: "Mirage Ship - Layer 1", type: "daily", times: ["01:30", "04:30", "07:30", "10:30", "13:30", "16:30", "19:30", "22:30"] },
+            { area: "World 2", name: "Wi Gwangryeong", location: "Nice Dragon Palace", map: "Mirage Ship - Layer 1", type: "daily", times: ["02:30", "5:30", "8:30", "11:30", "14:30", "17:30", "20:30", "23:30"] },
         // SPECIAL BOSS
-            { name: "Demon Spider of Hell Krukan", location: "Shackling Abaddon", map: "Special Boss", type: "weekly", day: 1, time: "23:00" }, // Monday
-            { name: "Black Flame Arch Demon Nerkan", location: "Black Flame Abaddon", map: "Special Boss", type: "weekly", day: 2, time: "23:00" }, // Tuesday
-            { name: "Hellish Lord Helbar", location: "Redmoon Purgatory 7F", map: "Redmoon Purgatory", type: "weekly", day: 3, time: "23:00" }, // Monday
-            { name: "Violet Demon God Turkan", location: "Violet Abaddon", map: "Special Boss", type: "weekly", day: 4, time: "23:00" }, // Thursday
-            { name: "Crimson Emperor Utukan", location: "Crimson Abaddon", map: "Special Boss", type: "weekly", day: 5, time: "23:00" }, // Friday
-            
-            // name: "Leader's Chamber I", map: "Magic Square", type: "respawn", interval: 30 * 60 * 1000 }, // 30 min
-            // name: "Leader's Chamber II", map: "Magic Square", type: "respawn", interval: 45 * 60 * 1000 }, // 45 min
-            // name: "Leader's Chamber III", map: "Magic Square", type: "daily", times: ["03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "00:00"] },
-            // name: "Lower Left Boss", map: "Secret Peak", type: "daily", times: ["13:00", "19:00", "01:00", "07:00"] },
-            // name: "Upper Right Boss", map: "Secret Peak", type: "daily", times: ["16:00", "22:00", "04:00", "10:00"] },
-            // name: "Green Boss", map: "Secret Peak", type: "respawn", interval: 30 * 60 * 1000 }, // Example hourly respawn
-            // name: "Yellow Boss", map: "Secret Peak", type: "respawn", interval: 60 * 60 * 1000 }, // Example hourly
+            { area: "Bicheon Valley", name: "Demon Spider of Hell Krukan", location: "Shackling Abaddon", map: "Special Boss", type: "weekly", day: 1, time: "23:00" }, // Monday
+            { area: "Redmoon Valley", name: "Black Flame Arch Demon Nerkan", location: "Black Flame Abaddon", map: "Special Boss", type: "weekly", day: 2, time: "23:00" }, // Tuesday
+            { area: "Redmoon Purgatory", name: "Hellish Lord Helbar", location: "Redmoon Purgatory 7F", map: "Special Boss", type: "weekly", day: 3, time: "23:00" }, // Monday
+            { area: "Phantasia Valley", name: "Violet Demon God Turkan", location: "Violet Abaddon", map: "Special Boss", type: "weekly", day: 4, time: "23:00" }, // Thursday
+            { area: "Snake Valley", name: "Crimson Emperor Utukan", location: "Crimson Abaddon", map: "Special Boss", type: "weekly", day: 5, time: "23:00" }, // Friday
+        // DOMINATION SERVER
+//            { name: "Eerie Fiend Karkazan", location: "Domination Labyrinth 4F", map: "Domination Server", type: "daily", times: ["09:00", "15:00", "21:00"] },
+//            { name: "Black Dragon Soul Ripper", location: "Black Dragon Valley 4F", map: "Domination Server", type: "daily", times: ["23:00"] },
+//            { name: "Drakazan", location: "Black Dragon Abaddon", map: "Domination Server", type: "weekly", day: 5, time: "23:00" }, // Friday
+//            { name: "Juja Neol", location: "Tower of Black Dragon", map: "Domination Server", type: "daily", times: ["11:00", "17:00", "23:00"] },
         ];
 
         const maps = [...new Set(bosses.map(b => b.map))];
@@ -409,6 +403,8 @@
                 const m = Math.floor((u.diff % 3600000) / 60000);
                 container.innerHTML += `
                     <tr>
+                        <th>${u.b.map}</th>
+                        <th>${u.b.area}</th>
                         <th>${u.b.name}</th>
                         <th>${u.b.location}</th>
                         <th>${h}h ${m}m</th>
@@ -437,6 +433,7 @@
                 const tr = document.createElement('tr');
                 const id = b.name.replace(/\s/g,'');
                 tr.innerHTML = `
+                    <td>${b.area}</td>
                     <td>${b.name}</td>
                     <td>${b.location}</td>
                     <td id="next-${id}"></td>
@@ -482,6 +479,3 @@
     </script>
 </body>
 </html>
-
-
-
